@@ -1,0 +1,16 @@
+__pycache__
+
+.hypothesis/
+.mypy_cache
+.pytest_cache
+.vscode
+.coverage
+
+/data/
+
+bps_comparison.ipynb
+bps_comparison.pdf
+
+pyproject.toml
+.venv
+poetry.lock
