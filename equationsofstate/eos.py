@@ -11,15 +11,15 @@ class EquationOfState(ABC):
         en_dens: float = self.energy_density_from(pressure)
         sound_speed_squared: float = self.sound_speed_squared_from(pressure)
 
-        return (1 + en_dens/pressure)*sound_speed_squared
+        return (1 + en_dens / pressure) * sound_speed_squared
 
     def sound_speed_squared_from(self, pressure: float) -> float:
         """Computes sound speed squared from pressure
         using central differences."""
-        h: float = pressure*1e-4
+        h: float = pressure * 1e-4
 
-        en_dens_plus_h: float = self.energy_density_from(pressure+h)
-        en_dens_minus_h: float = self.energy_density_from(pressure-h)
-        dedp: float = (en_dens_plus_h - en_dens_minus_h)/(2*h)
+        en_dens_plus_h: float = self.energy_density_from(pressure + h)
+        en_dens_minus_h: float = self.energy_density_from(pressure - h)
+        dedp: float = (en_dens_plus_h - en_dens_minus_h) / (2 * h)
 
-        return 1/dedp
+        return 1 / dedp

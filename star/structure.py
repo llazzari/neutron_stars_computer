@@ -3,15 +3,16 @@ from typing import Any, Optional
 from dataclasses import dataclass
 from scipy.interpolate import InterpolatedUnivariateSpline as Spline
 
-from star.tov_solver import radial_metric_fn, Array
+from .tov_solver import radial_metric_fn, Array
 
 
 @dataclass(slots=True)
-class InternalProfiles():
+class InternalProfiles:
     """Class containing time_metric_fn, mass [km] and pressure [MeV/fm³]
     as functions of the radial coordinate.
     If the stability is computed using radial oscillations,
     it will also contain the Lagragian variables \\xi and \\Delta p[MeV/fm³]"""
+
     radial_coord: Array
     time_metric_fn: Array
     masses: Array
@@ -28,7 +29,7 @@ class InternalProfiles():
 
 
 @dataclass(slots=True)
-class Star():
+class Star:
     central_pressure: float
     radius: float
     mass: float
@@ -39,8 +40,7 @@ class Star():
 def interpol_tov(profile: InternalProfiles) -> tuple[Any, ...]:
     """Interpolates the TOV solution using cubic splines."""
 
-    time_metric_fn_spl = Spline(
-        profile.radial_coord, profile.time_metric_fn)
+    time_metric_fn_spl = Spline(profile.radial_coord, profile.time_metric_fn)
     mass_spl = Spline(profile.radial_coord, profile.masses)
     pressure_spl = Spline(profile.radial_coord, profile.pressures)
 
