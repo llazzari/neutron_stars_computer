@@ -1,9 +1,9 @@
-import pandas as pd
 from dataclasses import dataclass
 from typing import Any
+import pandas as pd
 from scipy.interpolate import InterpolatedUnivariateSpline as Spline
 
-from equationsofstate.eos import EquationOfState
+from .eos import EquationOfState
 
 
 def read_table(file_path: str) -> pd.DataFrame:
@@ -12,9 +12,11 @@ def read_table(file_path: str) -> pd.DataFrame:
     Table header must be like: e p n cs2 gamma (a single white space).
     Data from the table is expected to be separated by a white space.
     """
-    if not file_path.endswith('.csv'):
-        raise ValueError('File format is not valid.')
-    return pd.read_csv(file_path, delim_whitespace=True)
+    if not file_path.endswith(".csv"):
+        raise ValueError(
+            "File format is not valid, must be .csv with values separated by a white space."
+        )
+    return pd.read_csv(file_path, sep=" ")
 
 
 def interpolate_table(df: pd.DataFrame) -> dict[str, Spline]:
@@ -22,14 +24,14 @@ def interpolate_table(df: pd.DataFrame) -> dict[str, Spline]:
     Interpolate Equation Of State from data table.
     Pressure (p) and energy density (e) are expected to be in MeV fm^-3!
     Baryon number density (n, optional) is expected to be in fm^-3!
-    Sound speed squared (cs2, optional) is expected to be dimensionless!
-    Adiabatic index (gamma, optional) is expected to be dimensionless!
+    Sound speed squared (cs2) is expected to be dimensionless!
+    Adiabatic index (gamma) is expected to be dimensionless!
     """
 
     cols: list[str] = df.columns.to_list()
-    cols.remove('p')
+    cols.remove("p")
 
-    return {col: Spline(df['p'], df[col], k=1) for col in cols}
+    return {col: Spline(df["p"], df[col], k=3) for col in cols}
 
 
 @dataclass
@@ -42,20 +44,14 @@ class RIPEOS(EquationOfState):
         df: pd.DataFrame = read_table(self.file_path)
         self.interpolations: dict[str, Any] = interpolate_table(df)
 
-        if 'gamma' not in self.interpolations.keys():
-            self.interpolations['gamma'] = super().adiabatic_index_from
-
-        if 'cs2' not in self.interpolations.keys():
-            self.interpolations['cs2'] = super().sound_speed_squared_from
-
     def energy_density_from(self, pressure: float) -> float:
-        return float(self.interpolations['e'](pressure))
+        return float(self.interpolations["e"](pressure))
 
     def baryon_density_from(self, pressure: float) -> float:
-        return float(self.interpolations['n'](pressure))
+        return float(self.interpolations["n"](pressure))
 
     def adiabatic_index_from(self, pressure: float) -> float:
-        return float(self.interpolations['gamma'](pressure))
+        return float(self.interpolations["gamma"](pressure))
 
     def sound_speed_squared_from(self, pressure: float) -> float:
-        return float(self.interpolations['cs2'](pressure))
+        return float(self.interpolations["cs2"](pressure))
