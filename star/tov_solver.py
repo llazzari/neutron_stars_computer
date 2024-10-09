@@ -119,7 +119,7 @@ def solve_tov(tov_input: TOVInput, central_pressure: float) -> Any:
             raise BoundaryNotFoundError(
                 "The integration was successfull, "
                 + "but the star's boundary was not reached. "
-                + "Perhaps you TOVInput.MAXRADIUS is too small?"
+                + "Perhaps your TOVInput.MAXRADIUS is too small?"
             )
 
     check_integration_validity(tov_integration.success, tov_integration.status)
